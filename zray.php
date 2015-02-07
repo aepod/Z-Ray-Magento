@@ -197,6 +197,21 @@ class Magento {
 		}
 		return $blocks;
     }
+
+	public function MageLog($content, &$storage){
+		$arr = $storage['log'];
+		if(!is_array($arr)){
+			$arr = array();
+		}
+		if(is_object($content['functionArgs'][0])){
+			return false;  // OBJECTS NEED WORK - SKIP for now.
+		}else{
+			$arr[] = array(array('File'=>$content['calledFromFile'],'Line'=>$content['calledFromLine'],'Log'=>$content['functionArgs'][0]));
+		}
+		
+	
+		$storage['log'] =  $arr;
+	}    
     
 }
 
@@ -211,5 +226,6 @@ $zrayMagento->getZRay()->setMetadata(array(
 $zrayMagento->getZRay()->setEnabledAfter('Mage::run');
 $zrayMagento->getZRay()->traceFunction('Mage::app', function(){}, array($zrayMagento, 'mageAppExit'));
 $zrayMagento->getZRay()->traceFunction('Mage::run', function(){}, array($zrayMagento, 'mageRunExit'));
+$zrayMagento->getZRay()->traceFunction('Mage::log', function(){}, array($zrayMagento, 'mageLog'));
 $zrayMagento->getZRay()->traceFunction('Mage_Core_Model_App::_callObserverMethod', function(){}, array($zrayMagento, 'appCallObserverMethod'));
 $zrayMagento->getZRay()->traceFunction('Mage::dispatchEvent', array($zrayMagento, 'mageDispatchEvent'), function(){});	
